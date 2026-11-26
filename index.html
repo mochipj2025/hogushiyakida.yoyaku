@@ -268,6 +268,24 @@
         color: var(--ink-soft);
       }
       .closed-box .big { font-size: 19px; font-weight: 900; color: var(--ink); display: block; margin-bottom: 4px; }
+      .today-hero {
+        width: 100%;
+        appearance: none;
+        border: none;
+        font-family: inherit;
+        text-align: left;
+        background: var(--green);
+        color: #fff;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        cursor: pointer;
+        display: block;
+      }
+      .today-hero .th-label { font-size: 12.5px; font-weight: 700; opacity: .85; }
+      .today-hero .th-main { font-size: 21px; font-weight: 900; line-height: 1.35; margin-top: 2px; }
+      .today-hero .th-sub { font-size: 13px; font-weight: 700; opacity: .9; margin-top: 2px; }
+      .today-hero.static { cursor: default; }
       .call-box {
         margin-top: 12px;
         background: #fff4e0;
@@ -348,6 +366,8 @@
         <p class="tagline">予約状況の確認ページです。空いている時間をご確認のうえ、ご予約はもみ徳公式アプリからお願いします。</p>
         <p class="store-line">勤務店舗：月・水・日は もみ徳 赤坂駅店／木曜は もみ徳 薬院店 です。選んだ日の店舗情報は「空き状況」の所に表示されます。</p>
       </header>
+
+      <button type="button" class="today-hero" id="todayHero" aria-live="polite"></button>
 
       <div id="step1">
       <section class="card" aria-labelledby="h-course">
@@ -638,6 +658,7 @@
           })(i);
         }
         renderCallNow(document.getElementById("callNowTop"), new Date(today));
+        renderTodayHero();
       }
 
       /* 当日で受付時間内なら「今すぐは電話」の案内を出す */
@@ -654,8 +675,44 @@
           store.short + '：<a class="tel-link" href="tel:' + store.tel.replace(/-/g, "") + '">' + store.tel + "</a>";
       }
 
+      /* トップ固定：今日の空き（最短・残り件数） */
+      var heroEl = document.getElementById("todayHero");
+      function renderTodayHero() {
+        var d = new Date(today);
+        var store = storeForDow(d.getDay());
+        if (!store) {
+          heroEl.classList.add("static");
+          heroEl.innerHTML =
+            '<span class="th-label">今日（' + DOW_JA[d.getDay()] + '）</span>' +
+            '<span class="th-main" style="display:block;">今日はお休みです</span>' +
+            '<span class="th-sub" style="display:block;">受付は月・水・木・日曜日です</span>';
+          return;
+        }
+        var list = slotsFor(d);
+        var open = list.filter(function (sl) { return sl.open; });
+        if (open.length > 0) {
+          heroEl.classList.remove("static");
+          heroEl.innerHTML =
+            '<span class="th-label">今日（' + DOW_JA[d.getDay()] + '）・' + store.short + '／' + state.course + '分コース</span>' +
+            '<span class="th-main" style="display:block;">最短 ' + toHHMM(open[0].start) + '〜 空きあり</span>' +
+            '<span class="th-sub" style="display:block;">残り ' + open.length + ' 件／タップで今日の時間を見る</span>';
+        } else {
+          heroEl.classList.add("static");
+          heroEl.innerHTML =
+            '<span class="th-label">今日（' + DOW_JA[d.getDay()] + '）・' + store.short + '／' + state.course + '分コース</span>' +
+            '<span class="th-main" style="display:block;">今日の空きはありません</span>' +
+            '<span class="th-sub" style="display:block;">別のお日にちをご確認ください</span>';
+        }
+      }
+      heroEl.addEventListener("click", function () {
+        if (heroEl.classList.contains("static")) return;
+        state.date = new Date(today);
+        openStep2();
+      });
+
       function openStep2() {
         step1El.style.display = "none";
+        heroEl.style.display = "none";
         step2El.style.display = "";
         renderSlots();
         step2El.scrollIntoView({ block: "start" });
@@ -663,6 +720,7 @@
       document.getElementById("backBtn").addEventListener("click", function () {
         step2El.style.display = "none";
         step1El.style.display = "";
+        heroEl.style.display = "";
         step1El.scrollIntoView({ block: "start" });
       });
 
