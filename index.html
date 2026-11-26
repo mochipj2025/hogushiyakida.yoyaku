@@ -253,6 +253,16 @@
       table.hours td { font-weight: 700; }
       table.hours .off { color: var(--ng-ink); font-weight: 500; }
       table.hours tr.today-row { background: var(--green-tint); }
+      .course-group { margin-top: 14px; }
+      .course-group:first-of-type { margin-top: 0; }
+      .course-group h3 { font-size: 14.5px; font-weight: 900; color: var(--green-deep); margin: 0 0 8px; }
+      table.menu { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+      table.menu th, table.menu td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+      table.menu tr:last-child th, table.menu tr:last-child td { border-bottom: none; }
+      table.menu th { font-weight: 900; }
+      table.menu td { font-weight: 700; white-space: nowrap; }
+      .menu-sub { font-size: 14.5px; font-weight: 900; color: var(--green-deep); margin: 16px 0 6px; }
+      .menu-sub:first-of-type { margin-top: 0; }
 
       .steps { margin: 0; padding-left: 1.3em; }
       .steps li { margin-bottom: 8px; }
@@ -312,12 +322,35 @@
       </section>
 
       <section class="card" aria-labelledby="h-course">
-        <h2 id="h-course">コースの長さを選ぶ</h2>
-        <p class="hint">選んだコースの長さで、その時間に受けられるかどうかを判定します。</p>
-        <div class="courses" id="courses" role="group" aria-label="コース時間の選択">
-          <button type="button" class="course-btn" data-min="60" aria-pressed="true">60分<small>コース</small></button>
-          <button type="button" class="course-btn" data-min="90" aria-pressed="false">90分<small>コース</small></button>
-          <button type="button" class="course-btn" data-min="120" aria-pressed="false">120分<small>コース</small></button>
+        <h2 id="h-course">コースを選ぶ</h2>
+        <p class="hint">選んだコースの長さで、その時間に受けられるかどうかを判定します。金額はアプリ会員価格です（指名料は別途+500円）。</p>
+        <div class="course-group">
+          <h3>もみほぐし</h3>
+          <div class="courses" role="group" aria-label="もみほぐしのコース時間">
+            <button type="button" class="course-btn" data-min="40" aria-pressed="false">40分<small>コース</small></button>
+            <button type="button" class="course-btn" data-min="60" aria-pressed="true">60分<small>会員 3,500円</small></button>
+            <button type="button" class="course-btn" data-min="80" aria-pressed="false">80分<small>会員 4,600円</small></button>
+            <button type="button" class="course-btn" data-min="100" aria-pressed="false">100分<small>会員 5,700円</small></button>
+            <button type="button" class="course-btn" data-min="120" aria-pressed="false">120分<small>会員 6,800円</small></button>
+          </div>
+        </div>
+        <div class="course-group">
+          <h3>セットコース（足ツボ30分つき）</h3>
+          <div class="courses" role="group" aria-label="足ツボセットのコース時間">
+            <button type="button" class="course-btn" data-min="60" aria-pressed="false">60分<small>会員 4,000円</small></button>
+            <button type="button" class="course-btn" data-min="80" aria-pressed="false">80分<small>会員 5,100円</small></button>
+            <button type="button" class="course-btn" data-min="100" aria-pressed="false">100分<small>会員 6,200円</small></button>
+            <button type="button" class="course-btn" data-min="120" aria-pressed="false">120分<small>会員 7,300円</small></button>
+          </div>
+        </div>
+        <div class="course-group">
+          <h3>セットコース（ドライヘッドつき）</h3>
+          <div class="courses" role="group" aria-label="ドライヘッドセットのコース時間">
+            <button type="button" class="course-btn" data-min="60" aria-pressed="false">60分<small>会員 4,000円</small></button>
+            <button type="button" class="course-btn" data-min="80" aria-pressed="false">80分<small>会員 5,100円</small></button>
+            <button type="button" class="course-btn" data-min="100" aria-pressed="false">100分<small>会員 6,200円</small></button>
+            <button type="button" class="course-btn" data-min="120" aria-pressed="false">120分<small>会員 7,300円</small></button>
+          </div>
         </div>
       </section>
 
@@ -346,6 +379,34 @@
             <tr data-dow="0"><th>日曜日</th><td>13:00〜21:00（赤坂駅店）</td></tr>
           </tbody>
         </table>
+      </section>
+
+      <section class="card" aria-labelledby="h-price">
+        <h2 id="h-price">料金</h2>
+        <p class="menu-sub">もみほぐし</p>
+        <table class="menu">
+          <tbody>
+            <tr><th>60分</th><td>通常 4,000円</td><td>アプリ会員 3,500円</td></tr>
+            <tr><th>80分</th><td>通常 5,100円</td><td>アプリ会員 4,600円</td></tr>
+            <tr><th>100分</th><td>通常 6,200円</td><td>アプリ会員 5,700円</td></tr>
+            <tr><th>120分</th><td>通常 7,300円</td><td>アプリ会員 6,800円</td></tr>
+          </tbody>
+        </table>
+        <p class="hint">40分コースもあります。料金はご予約時にアプリでご確認ください。</p>
+        <p class="menu-sub">セットコース</p>
+        <table class="menu">
+          <tbody>
+            <tr><th>足ツボ30分つき 60分</th><td>通常 4,500円</td><td>アプリ会員 4,000円</td></tr>
+            <tr><th>足ツボ30分つき 80分</th><td>通常 5,600円</td><td>アプリ会員 5,100円</td></tr>
+            <tr><th>足ツボ30分つき 100分</th><td>通常 6,700円</td><td>アプリ会員 6,200円</td></tr>
+            <tr><th>足ツボ30分つき 120分</th><td>通常 7,800円</td><td>アプリ会員 7,300円</td></tr>
+            <tr><th>ドライヘッドつき 60分</th><td>通常 4,500円</td><td>アプリ会員 4,000円</td></tr>
+            <tr><th>ドライヘッドつき 80分</th><td>通常 5,600円</td><td>アプリ会員 5,100円</td></tr>
+            <tr><th>ドライヘッドつき 100分</th><td>通常 6,700円</td><td>アプリ会員 6,200円</td></tr>
+            <tr><th>ドライヘッドつき 120分</th><td>通常 7,800円</td><td>アプリ会員 7,300円</td></tr>
+          </tbody>
+        </table>
+        <p class="hint">指名料は、基本料金に +500円 です。料金はもみ徳公式サイトの掲載価格（2026年11月確認）で、セットコースは赤坂駅店の掲載価格です。薬院店ではセットの内容・料金が一部異なる場合があります。最終確認はアプリでお願いします。</p>
       </section>
 
       <section class="card" aria-labelledby="h-how">
