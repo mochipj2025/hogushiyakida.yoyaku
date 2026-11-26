@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>ほぐしや木田 予約状況（お客様用）</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Zen+Old+Mincho:wght@700;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f2f6f0;
+        --surface: #ffffff;
+        --surface-2: #e8f1e6;
+        --ink: #1d2b1f;
+        --ink-soft: #4c5d4e;
+        --line: #cfdfca;
+        --green: #2e7d4f;
+        --green-deep: #1c5636;
+        --green-dark: #123d25;
+        --green-tint: #e3f0e1;
+        --accent: #b96a1b;
+        --accent-bg: #fdf0dc;
+        --accent-line: #eec27f;
+        --ok-bg: #e7f4e4;
+        --ng-bg: #f1f1ec;
+        --ng-ink: #8a8f85;
+        --shadow: 0 2px 10px rgba(18, 61, 37, 0.08);
+        --radius: 14px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #10160f;
+          --surface: #1a241a;
+          --surface-2: #22301f;
+          --ink: #e9f2e6;
+          --ink-soft: #a9bda4;
+          --line: #33482f;
+          --green: #5cb87e;
+          --green-deep: #7cc795;
+          --green-dark: #0d2417;
+          --green-tint: #22351f;
+          --accent: #e8a558;
+          --accent-bg: #3a2c14;
+          --accent-line: #7a5c26;
+          --ok-bg: #1e3620;
+          --ng-bg: #23281f;
+          --ng-ink: #7d8577;
+          --shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+        line-height: 1.65;
+        font-size: 16px;
+      }
+      .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 56px; }
+
+      /* 注意バナー（常時表示） */
+      .notice {
+        background: var(--accent-bg);
+        border-bottom: 3px solid var(--accent-line);
+        padding: 14px 16px;
+      }
+      .notice-inner { max-width: 720px; margin: 0 auto; display: flex; gap: 12px; align-items: flex-start; }
+      .notice-badge {
+        flex: 0 0 auto;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 900;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        border-radius: 999px;
+        padding: 4px 12px;
+        margin-top: 2px;
+        white-space: nowrap;
+      }
+      @media (prefers-color-scheme: dark) { .notice-badge { color: #241a05; } }
+      .notice p { margin: 0; font-size: 15px; font-weight: 700; }
+      .notice p strong { font-size: 17px; }
+
+      header.site { padding: 28px 0 6px; }
+      .shop-name {
+        font-family: "Zen Old Mincho", "Hiragino Mincho ProN", serif;
+        font-weight: 900;
+        font-size: 30px;
+        letter-spacing: 0.04em;
+        margin: 0;
+        color: var(--green-dark);
+      }
+      @media (prefers-color-scheme: dark) { .shop-name { color: var(--green-deep); } }
+      .shop-name .leaf { color: var(--green); }
+      .tagline { margin: 6px 0 0; color: var(--ink-soft); font-size: 15px; }
+      .store-line { margin: 10px 0 0; font-size: 13px; color: var(--ink-soft); }
+
+      section.card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px 18px;
+        margin-top: 20px;
+      }
+      h2 {
+        font-size: 18px;
+        font-weight: 900;
+        margin: 0 0 4px;
+        color: var(--green-deep);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      h2::before {
+        content: "";
+        width: 6px; height: 20px;
+        background: var(--green);
+        border-radius: 3px;
+        flex: 0 0 auto;
+      }
+      .hint { margin: 0 0 14px; font-size: 13.5px; color: var(--ink-soft); }
+
+      /* 日付チップ */
+      .dates { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+      @media (max-width: 560px) { .dates { grid-template-columns: repeat(4, 1fr); } }
+      .date-btn {
+        appearance: none;
+        border: 1.5px solid var(--line);
+        background: var(--surface);
+        color: var(--ink);
+        border-radius: 10px;
+        padding: 8px 2px 7px;
+        min-height: 56px;
+        cursor: pointer;
+        font-family: inherit;
+        text-align: center;
+        line-height: 1.3;
+      }
+      .date-btn .dow { display: block; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+      .date-btn .dnum { display: block; font-size: 17px; font-weight: 900; }
+      .date-btn .closed-tag { display: block; font-size: 10.5px; color: var(--ng-ink); font-weight: 700; }
+      .date-btn[aria-pressed="true"] {
+        background: var(--green);
+        border-color: var(--green);
+        color: #fff;
+      }
+      .date-btn[aria-pressed="true"] .dow,
+      .date-btn[aria-pressed="true"] .closed-tag { color: #d9efdc; }
+      .date-btn:focus-visible, .course-btn:focus-visible, a.app-btn:focus-visible {
+        outline: 3px solid var(--green);
+        outline-offset: 2px;
+      }
+
+      /* コース選択 */
+      .courses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .course-btn {
+        appearance: none;
+        border: 1.5px solid var(--line);
+        background: var(--surface);
+        color: var(--ink);
+        border-radius: 10px;
+        min-height: 52px;
+        padding: 8px 4px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 17px;
+        font-weight: 900;
+      }
+      .course-btn small { display: block; font-size: 11.5px; font-weight: 500; color: var(--ink-soft); }
+      .course-btn[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: #fff; }
+      .course-btn[aria-pressed="true"] small { color: #d9efdc; }
+
+      /* 空き状況 */
+      .day-head {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px;
+        margin-bottom: 4px;
+      }
+      .day-head .date-label { font-size: 19px; font-weight: 900; }
+      .day-head .hours-label { font-size: 14px; color: var(--ink-soft); font-weight: 700; }
+      .summary { font-size: 14px; font-weight: 700; color: var(--green-deep); margin: 2px 0 14px; }
+      .slots { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+      .slot {
+        display: flex; align-items: center; gap: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        min-height: 60px;
+      }
+      .slot.open { background: var(--ok-bg); }
+      .slot.full { background: var(--ng-bg); color: var(--ng-ink); }
+      .slot .mark {
+        flex: 0 0 auto;
+        width: 34px; height: 34px;
+        border-radius: 50%;
+        display: grid; place-items: center;
+        font-size: 19px; font-weight: 900;
+      }
+      .slot.open .mark { background: var(--green); color: #fff; }
+      .slot.full .mark { background: transparent; border: 2px solid var(--ng-ink); color: var(--ng-ink); font-size: 16px; }
+      .slot .time { font-weight: 900; font-size: 16.5px; white-space: nowrap; }
+      .slot .status { font-size: 13px; font-weight: 700; }
+      .slot .spacer { flex: 1 1 auto; }
+      a.app-btn {
+        flex: 0 0 auto;
+        display: inline-flex; align-items: center;
+        min-height: 44px;
+        padding: 8px 14px;
+        background: var(--green);
+        color: #fff;
+        font-weight: 900;
+        font-size: 14px;
+        text-decoration: none;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      a.app-btn:active { background: var(--green-deep); }
+      @media (max-width: 480px) {
+        .slot { flex-wrap: wrap; }
+        a.app-btn { width: 100%; justify-content: center; }
+      }
+      .closed-box {
+        background: var(--ng-bg);
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 22px 16px;
+        text-align: center;
+        font-weight: 700;
+        color: var(--ink-soft);
+      }
+      .closed-box .big { font-size: 19px; font-weight: 900; color: var(--ink); display: block; margin-bottom: 4px; }
+
+      /* 営業時間表 */
+      table.hours { width: 100%; border-collapse: collapse; font-size: 15px; }
+      table.hours th, table.hours td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+      table.hours tr:last-child th, table.hours tr:last-child td { border-bottom: none; }
+      table.hours th { font-weight: 900; width: 42%; }
+      table.hours td { font-weight: 700; }
+      table.hours .off { color: var(--ng-ink); font-weight: 500; }
+      table.hours tr.today-row { background: var(--green-tint); }
+
+      .steps { margin: 0; padding-left: 1.3em; }
+      .steps li { margin-bottom: 8px; }
+      .steps li:last-child { margin-bottom: 0; }
+
+      .app-cta {
+        margin-top: 20px;
+        background: var(--green-dark);
+        color: #eaf5ea;
+        border-radius: var(--radius);
+        padding: 22px 18px;
+        text-align: center;
+      }
+      .app-cta h2 { color: #fff; justify-content: center; }
+      .app-cta h2::before { background: #8fd0a4; }
+      .app-cta p { margin: 6px 0 16px; font-size: 14.5px; }
+      .app-cta a.app-btn { background: #fff; color: var(--green-dark); font-size: 16px; padding: 10px 22px; }
+      .placeholder-note { font-size: 12px; color: #b9d4ba; margin-top: 12px; }
+
+      .toast {
+        position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(16px);
+        background: var(--green-dark); color: #fff;
+        padding: 12px 18px; border-radius: 10px;
+        font-size: 14px; font-weight: 700;
+        opacity: 0; pointer-events: none;
+        transition: opacity .25s ease, transform .25s ease;
+        max-width: calc(100vw - 32px); text-align: center;
+        z-index: 10;
+      }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+
+      footer { margin-top: 28px; text-align: center; color: var(--ink-soft); font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <!-- 注意書き：常時表示 -->
+    <div class="notice" role="note">
+      <div class="notice-inner">
+        <span class="notice-badge">ご案内</span>
+        <p><strong>この予約状況は15分ごとの更新です。</strong><br />
+        直前に予約が入ると、表示と実際の空きがずれることがあります。最終確認はもみ徳公式アプリでお願いします。</p>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <header class="site">
+        <h1 class="shop-name"><span class="leaf">❧</span> ほぐしや木田</h1>
+        <p class="tagline">予約状況の確認ページです。空いている時間をご確認のうえ、ご予約はもみ徳公式アプリからお願いします。</p>
+        <p class="store-line">店舗：もみ徳（詳しい店舗情報は準備中です）</p>
+      </header>
+
+      <section class="card" aria-labelledby="h-date">
+        <h2 id="h-date">日にちを選ぶ</h2>
+        <p class="hint">直近14日分を表示しています。お休みの日は選んでも空き状況は表示されません。</p>
+        <div class="dates" id="dates" role="group" aria-label="日付の選択"></div>
+      </section>
+
+      <section class="card" aria-labelledby="h-course">
+        <h2 id="h-course">コースの長さを選ぶ</h2>
+        <p class="hint">選んだコースの長さで、その時間に受けられるかどうかを判定します。</p>
+        <div class="courses" id="courses" role="group" aria-label="コース時間の選択">
+          <button type="button" class="course-btn" data-min="60" aria-pressed="true">60分<small>コース</small></button>
+          <button type="button" class="course-btn" data-min="90" aria-pressed="false">90分<small>コース</small></button>
+          <button type="button" class="course-btn" data-min="120" aria-pressed="false">120分<small>コース</small></button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-slots">
+        <h2 id="h-slots">空き状況</h2>
+        <div class="day-head">
+          <span class="date-label" id="dayLabel">―</span>
+          <span class="hours-label" id="hoursLabel"></span>
+        </div>
+        <p class="summary" id="summary" aria-live="polite"></p>
+        <div id="slotArea"></div>
+        <p class="hint" style="margin-top:14px;">○ の時間は、現時点の表示で空いています。ご予約の確定はアプリ側で行われます。</p>
+      </section>
+
+      <section class="card" aria-labelledby="h-hours">
+        <h2 id="h-hours">受付時間</h2>
+        <table class="hours" id="hoursTable">
+          <tbody>
+            <tr data-dow="1"><th>月曜日</th><td>10:00〜18:00</td></tr>
+            <tr data-dow="2"><th>火曜日</th><td class="off">お休み</td></tr>
+            <tr data-dow="3"><th>水曜日</th><td>10:00〜18:00</td></tr>
+            <tr data-dow="4"><th>木曜日</th><td>11:00〜19:00</td></tr>
+            <tr data-dow="5"><th>金曜日</th><td class="off">お休み</td></tr>
+            <tr data-dow="6"><th>土曜日</th><td class="off">お休み</td></tr>
+            <tr data-dow="0"><th>日曜日</th><td>13:00〜21:00</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card" aria-labelledby="h-how">
+        <h2 id="h-how">ご予約の流れ</h2>
+        <ol class="steps">
+          <li>このページで、日にちとコースの長さを選んで空きを確認します。</li>
+          <li>空いている時間があったら、もみ徳公式アプリを開きます。</li>
+          <li>アプリで日時とコースを選んで予約を確定してください（最終確認はアプリの表示が正となります）。</li>
+        </ol>
+      </section>
+
+      <div class="app-cta">
+        <h2>ご予約はこちらから</h2>
+        <p>空きの確認ができたら、もみ徳公式アプリでそのまま予約できます。</p>
+        <!-- プレースホルダー：アプリの実リンクが決まり次第、href を差し替える -->
+        <a class="app-btn js-app-link" href="#" aria-label="もみ徳公式アプリで予約する（リンクは準備中）">もみ徳公式アプリで予約する</a>
+        <p class="placeholder-note">※アプリへのリンクは準備中です。決まり次第こちらに掲載します。</p>
+      </div>
+
+      <footer>
+        <p>ほぐしや木田｜もみ徳にて施術しています</p>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+      "use strict";
+
+      /* ============================================================
+         既存予約データ（ページ内埋め込み）
+         予約が入ったら、ここに1件ずつ追加してページを更新します。
+         形式：{ date: "2026-11-30", start: "14:00", end: "15:00" }
+         初期状態は予約0件です。
+         ============================================================ */
+      var BOOKINGS = [
+        // 例：{ date: "2026-11-30", start: "14:00", end: "15:00" }
+      ];
+
+      /* 予約の前後30分をインターバル（受付不可）としてブロックします */
+      var INTERVAL_MIN = 30;
+
+      /* 曜日ごとの受付時間（0=日曜 … 6=土曜）。null はお休み */
+      var HOURS = {
+        0: { open: "13:00", close: "21:00" }, /* 日 */
+        1: { open: "10:00", close: "18:00" }, /* 月 */
+        2: null,                              /* 火 */
+        3: { open: "10:00", close: "18:00" }, /* 水 */
+        4: { open: "11:00", close: "19:00" }, /* 木 */
+        5: null,                              /* 金 */
+        6: null                               /* 土 */
+      };
+
+      var DOW_JA = ["日", "月", "火", "水", "木", "金", "土"];
+      var SLOT_STEP = 30; /* 開始時刻は30分刻み */
+
+      function toMin(hhmm) {
+        var p = hhmm.split(":");
+        return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+      }
+      function toHHMM(min) {
+        var h = Math.floor(min / 60), m = min % 60;
+        return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+      }
+      function dateKey(d) {
+        var m = d.getMonth() + 1, day = d.getDate();
+        return d.getFullYear() + "-" + (m < 10 ? "0" : "") + m + "-" + (day < 10 ? "0" : "") + day;
+      }
+
+      var state = { date: null, course: 60 };
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      state.date = new Date(today);
+
+      /* 日付チップ（直近14日）を生成 */
+      var datesEl = document.getElementById("dates");
+      var dateBtns = [];
+      for (var i = 0; i < 14; i++) {
+        (function (offset) {
+          var d = new Date(today);
+          d.setDate(d.getDate() + offset);
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "date-btn";
+          btn.setAttribute("aria-pressed", offset === 0 ? "true" : "false");
+          var closed = HOURS[d.getDay()] === null;
+          btn.innerHTML =
+            '<span class="dow">' + (offset === 0 ? "今日・" : "") + DOW_JA[d.getDay()] + "曜</span>" +
+            '<span class="dnum">' + (d.getMonth() + 1) + "/" + d.getDate() + "</span>" +
+            (closed ? '<span class="closed-tag">お休み</span>' : '<span class="closed-tag">&nbsp;</span>');
+          btn.addEventListener("click", function () {
+            state.date = d;
+            dateBtns.forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+            btn.setAttribute("aria-pressed", "true");
+            render();
+          });
+          datesEl.appendChild(btn);
+          dateBtns.push(btn);
+        })(i);
+      }
+
+      /* コース選択 */
+      var courseBtns = Array.prototype.slice.call(document.querySelectorAll(".course-btn"));
+      courseBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          state.course = parseInt(btn.getAttribute("data-min"), 10);
+          courseBtns.forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+          btn.setAttribute("aria-pressed", "true");
+          render();
+        });
+      });
+
+      /* その日のブロック区間（予約 ± 30分） */
+      function blockedRanges(key) {
+        return BOOKINGS.filter(function (b) { return b.date === key; }).map(function (b) {
+          return { from: toMin(b.start) - INTERVAL_MIN, to: toMin(b.end) + INTERVAL_MIN };
+        });
+      }
+
+      function render() {
+        var d = state.date;
+        var key = dateKey(d);
+        var hours = HOURS[d.getDay()];
+        var dayLabel = document.getElementById("dayLabel");
+        var hoursLabel = document.getElementById("hoursLabel");
+        var summary = document.getElementById("summary");
+        var area = document.getElementById("slotArea");
+
+        dayLabel.textContent = (d.getMonth() + 1) + "月" + d.getDate() + "日（" + DOW_JA[d.getDay()] + "）";
+
+        if (!hours) {
+          hoursLabel.textContent = "";
+          summary.textContent = "";
+          area.innerHTML =
+            '<div class="closed-box"><span class="big">この日はお休みです</span>' +
+            "受付は月・水・木・日曜日です。別の日をお選びください。</div>";
+          return;
+        }
+
+        hoursLabel.textContent = "受付 " + hours.open + "〜" + hours.close + "／" + state.course + "分コース";
+        var open = toMin(hours.open), close = toMin(hours.close);
+        var blocked = blockedRanges(key);
+
+        var ul = document.createElement("ul");
+        ul.className = "slots";
+        var openCount = 0, total = 0;
+
+        for (var start = open; start + state.course <= close; start += SLOT_STEP) {
+          total++;
+          var end = start + state.course;
+          var hit = blocked.some(function (r) { return start < r.to && end > r.from; });
+          var li = document.createElement("li");
+          if (hit) {
+            li.className = "slot full";
+            li.innerHTML =
+              '<span class="mark" aria-hidden="true">×</span>' +
+              '<span class="time">' + toHHMM(start) + "〜" + toHHMM(end) + "</span>" +
+              '<span class="status">予約不可</span>';
+          } else {
+            openCount++;
+            li.className = "slot open";
+            li.innerHTML =
+              '<span class="mark" aria-hidden="true">○</span>' +
+              '<span class="time">' + toHHMM(start) + "〜" + toHHMM(end) + "</span>" +
+              '<span class="status">空きあり</span>' +
+              '<span class="spacer"></span>' +
+              '<a class="app-btn js-app-link" href="#">アプリで予約する</a>';
+          }
+          ul.appendChild(li);
+        }
+
+        area.innerHTML = "";
+        area.appendChild(ul);
+        summary.textContent = openCount > 0
+          ? "空いている時間は " + openCount + " 件あります（全 " + total + " 件）"
+          : "この日は、選んだコースで入れる時間がありません。";
+        bindAppLinks();
+      }
+
+      /* アプリリンクはプレースホルダー：実リンク確定までは案内を表示 */
+      var toast = document.getElementById("toast");
+      var toastTimer = null;
+      function bindAppLinks() {
+        Array.prototype.forEach.call(document.querySelectorAll(".js-app-link"), function (a) {
+          a.addEventListener("click", function (ev) {
+            ev.preventDefault();
+            toast.textContent = "もみ徳公式アプリへのリンクは準備中です。アプリから日時とコースを選んでご予約ください。";
+            toast.classList.add("show");
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 3600);
+          });
+        });
+      }
+
+      /* 受付時間表で今日の行を目立たせる */
+      var todayDow = String(today.getDay());
+      Array.prototype.forEach.call(document.querySelectorAll("#hoursTable tr"), function (tr) {
+        if (tr.getAttribute("data-dow") === todayDow) tr.classList.add("today-row");
+      });
+
+      render();
+      bindAppLinks();
+    </script>
+  </body>
+</html>
