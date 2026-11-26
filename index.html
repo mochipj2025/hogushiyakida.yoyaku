@@ -183,6 +183,17 @@
       }
       .day-head .date-label { font-size: 19px; font-weight: 900; }
       .day-head .hours-label { font-size: 14px; color: var(--ink-soft); font-weight: 700; }
+      .store-box {
+        border: 1.5px solid var(--green);
+        background: var(--ok-bg);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 8px 0 4px;
+        font-size: 13.5px;
+        line-height: 1.65;
+      }
+      .store-box .store-name { font-size: 16px; font-weight: 900; color: var(--ink); }
+      .store-box a { color: var(--green-deep); font-weight: 700; }
       .summary { font-size: 14px; font-weight: 700; color: var(--green-deep); margin: 2px 0 14px; }
       .slots { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
       .slot {
@@ -292,7 +303,7 @@
       <header class="site">
         <h1 class="shop-name"><span class="leaf">❧</span> ほぐしや木田</h1>
         <p class="tagline">予約状況の確認ページです。空いている時間をご確認のうえ、ご予約はもみ徳公式アプリからお願いします。</p>
-        <p class="store-line">店舗：もみ徳（詳しい店舗情報は準備中です）</p>
+        <p class="store-line">勤務店舗：月・水・日は もみ徳 赤坂駅店／木曜は もみ徳 薬院店 です。選んだ日の店舗情報は「空き状況」の所に表示されます。</p>
       </header>
 
       <section class="card" aria-labelledby="h-date">
@@ -317,6 +328,7 @@
           <span class="date-label" id="dayLabel">―</span>
           <span class="hours-label" id="hoursLabel"></span>
         </div>
+        <div class="store-box" id="storeBox" aria-live="polite"></div>
         <p class="summary" id="summary" aria-live="polite"></p>
         <div id="slotArea"></div>
         <p class="hint" style="margin-top:14px;">○ の時間は、現時点の表示で空いています。ご予約の確定はアプリ側で行われます。</p>
@@ -326,13 +338,13 @@
         <h2 id="h-hours">受付時間</h2>
         <table class="hours" id="hoursTable">
           <tbody>
-            <tr data-dow="1"><th>月曜日</th><td>10:00〜18:00</td></tr>
+            <tr data-dow="1"><th>月曜日</th><td>10:00〜18:00（赤坂駅店）</td></tr>
             <tr data-dow="2"><th>火曜日</th><td class="off">お休み</td></tr>
-            <tr data-dow="3"><th>水曜日</th><td>10:00〜18:00</td></tr>
-            <tr data-dow="4"><th>木曜日</th><td>11:00〜19:00</td></tr>
+            <tr data-dow="3"><th>水曜日</th><td>10:00〜18:00（赤坂駅店）</td></tr>
+            <tr data-dow="4"><th>木曜日</th><td>11:00〜19:00（薬院店）</td></tr>
             <tr data-dow="5"><th>金曜日</th><td class="off">お休み</td></tr>
             <tr data-dow="6"><th>土曜日</th><td class="off">お休み</td></tr>
-            <tr data-dow="0"><th>日曜日</th><td>13:00〜21:00</td></tr>
+            <tr data-dow="0"><th>日曜日</th><td>13:00〜21:00（赤坂駅店）</td></tr>
           </tbody>
         </table>
       </section>
@@ -387,6 +399,26 @@
         5: null,                              /* 金 */
         6: null                               /* 土 */
       };
+
+      /* 曜日ごとの勤務店舗（木曜だけ薬院店、それ以外の勤務日は赤坂駅店） */
+      var STORES = {
+        akasaka: {
+          name: "もみ徳 赤坂駅店（旧天神西店）",
+          address: "〒810-0041 福岡市中央区大名2丁目4-38 チサンマンション天神3 507室",
+          tel: "092-716-4483",
+          access: "地下鉄空港線「赤坂駅」から徒歩1分／西鉄福岡（天神）駅から徒歩5分"
+        },
+        yakuin: {
+          name: "もみ徳 薬院店",
+          address: "〒810-0022 福岡市中央区薬院2丁目3-5 エコール薬院 403",
+          tel: "092-791-8850",
+          access: "地下鉄七隈線「薬院大通」1号出口から徒歩0分／西鉄「薬院駅」から徒歩5分"
+        }
+      };
+      function storeForDow(dow) {
+        if (HOURS[dow] === null) return null;
+        return dow === 4 ? STORES.yakuin : STORES.akasaka;
+      }
 
       var DOW_JA = ["日", "月", "火", "水", "木", "金", "土"];
       var SLOT_STEP = 30; /* 開始時刻は30分刻み */
@@ -464,6 +496,20 @@
         var area = document.getElementById("slotArea");
 
         dayLabel.textContent = (d.getMonth() + 1) + "月" + d.getDate() + "日（" + DOW_JA[d.getDay()] + "）";
+
+        var storeBox = document.getElementById("storeBox");
+        var store = storeForDow(d.getDay());
+        if (store) {
+          storeBox.style.display = "";
+          storeBox.innerHTML =
+            '<span class="store-name">この日は ' + store.name + '</span><br />' +
+            store.address + '<br />' +
+            '電話：<a href="tel:' + store.tel.replace(/-/g, "") + '">' + store.tel + '</a><br />' +
+            store.access;
+        } else {
+          storeBox.style.display = "none";
+          storeBox.innerHTML = "";
+        }
 
         if (!hours) {
           hoursLabel.textContent = "";
