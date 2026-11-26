@@ -429,7 +429,7 @@
         <p class="summary" id="summary" aria-live="polite"></p>
         <div class="call-box" id="callNow" style="display:none;"></div>
         <div id="slotArea"></div>
-        <p class="hint" style="margin-top:14px;">○ の時間は、現時点の表示で空いています。右の「アプリで予約」から、もみ徳公式アプリを開けます。</p>
+        <p class="hint" style="margin-top:14px;">○ の時間は、現時点の表示で空いています。右の「アプリで予約」から、もみ徳公式アプリを開けます。当日の予約が入っていない時間は、最短で今から10分後からご予約いただけます。</p>
       </section>
 
       <section class="card" aria-labelledby="h-hours">
@@ -498,7 +498,7 @@
         <ol class="steps">
           <li>このページで、日にちとコースの長さを選んで空きを確認します。</li>
           <li>空いている時間があったら、もみ徳公式アプリを開きます。</li>
-          <li>アプリで日時とコースを選んで予約を確定してください（最終確認はアプリの表示が正となります）。</li>
+          <li>アプリで日時とコースを選んで予約を確定してください（当日の予約が入っていない場合は、最短で今から10分後から予約できます。最終確認はアプリの表示が正となります）。</li>
         </ol>
       </section>
 
@@ -677,7 +677,8 @@
         if (!show) { el.style.display = "none"; el.innerHTML = ""; return; }
         el.style.display = "";
         el.innerHTML =
-          "今すぐ入りたい方は、お電話が確実です（アプリ予約は10分後から）。<br />" +
+          "予約が入っていない場合は、最短で今から10分後からアプリでご予約できます。<br />" +
+          "今すぐ入りたい方は、お電話が確実です。<br />" +
           store.short + '：<a class="tel-link" href="tel:' + store.tel.replace(/-/g, "") + '">' + store.tel + "</a>";
       }
 
