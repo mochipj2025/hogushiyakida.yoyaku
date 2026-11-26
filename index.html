@@ -126,33 +126,44 @@
       }
       .hint { margin: 0 0 14px; font-size: 13.5px; color: var(--ink-soft); }
 
-      /* 日付チップ */
-      .dates { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-      @media (max-width: 560px) { .dates { grid-template-columns: repeat(4, 1fr); } }
-      .date-btn {
+      /* 日付リスト（1画面目） */
+      .dates { display: grid; gap: 8px; }
+      .day-row {
         appearance: none;
+        display: flex; align-items: center; gap: 10px;
+        width: 100%;
         border: 1.5px solid var(--line);
         background: var(--surface);
         color: var(--ink);
         border-radius: 10px;
-        padding: 8px 2px 7px;
+        padding: 12px 14px;
         min-height: 56px;
         cursor: pointer;
         font-family: inherit;
-        text-align: center;
-        line-height: 1.3;
+        text-align: left;
       }
-      .date-btn .dow { display: block; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
-      .date-btn .dnum { display: block; font-size: 17px; font-weight: 900; }
-      .date-btn .closed-tag { display: block; font-size: 10.5px; color: var(--ng-ink); font-weight: 700; }
-      .date-btn[aria-pressed="true"] {
-        background: var(--green);
-        border-color: var(--green);
-        color: #fff;
+      .day-row .d-main { font-size: 16.5px; font-weight: 900; white-space: nowrap; }
+      .day-row .d-store { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); white-space: nowrap; }
+      .day-row .d-status { margin-left: auto; font-size: 14px; font-weight: 900; white-space: nowrap; }
+      .day-row .d-status.ok { color: var(--green-deep); }
+      .day-row .d-status.off { color: var(--ng-ink); font-weight: 700; }
+      .day-row:disabled { opacity: .55; cursor: default; }
+      .day-row:not(:disabled):active { background: var(--green-tint); }
+      .back-btn {
+        appearance: none;
+        border: 1.5px solid var(--green);
+        background: var(--surface);
+        color: var(--green-deep);
+        border-radius: 999px;
+        padding: 8px 16px;
+        min-height: 44px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        margin-bottom: 12px;
       }
-      .date-btn[aria-pressed="true"] .dow,
-      .date-btn[aria-pressed="true"] .closed-tag { color: #d9efdc; }
-      .date-btn:focus-visible, .course-btn:focus-visible, a.app-btn:focus-visible {
+      .day-row:focus-visible, .back-btn:focus-visible, .course-btn:focus-visible, a.app-btn:focus-visible {
         outline: 3px solid var(--green);
         outline-offset: 2px;
       }
@@ -244,6 +255,15 @@
         color: var(--ink-soft);
       }
       .closed-box .big { font-size: 19px; font-weight: 900; color: var(--ink); display: block; margin-bottom: 4px; }
+      .call-box {
+        margin-top: 12px;
+        background: #fff4e0;
+        border: 1.5px solid #e8a33d;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14.5px;
+      }
+      .call-box .tel-link { font-weight: 900; color: #9a6206; font-size: 16.5px; }
 
       /* 営業時間表 */
       table.hours { width: 100%; border-collapse: collapse; font-size: 15px; }
@@ -315,12 +335,7 @@
         <p class="store-line">勤務店舗：月・水・日は もみ徳 赤坂駅店／木曜は もみ徳 薬院店 です。選んだ日の店舗情報は「空き状況」の所に表示されます。</p>
       </header>
 
-      <section class="card" aria-labelledby="h-date">
-        <h2 id="h-date">日にちを選ぶ</h2>
-        <p class="hint">直近14日分を表示しています。お休みの日は選んでも空き状況は表示されません。</p>
-        <div class="dates" id="dates" role="group" aria-label="日付の選択"></div>
-      </section>
-
+      <div id="step1">
       <section class="card" aria-labelledby="h-course">
         <h2 id="h-course">コースを選ぶ</h2>
         <p class="hint">選んだコースの長さで、その時間に受けられるかどうかを判定します。金額はアプリ会員価格です（指名料は別途+500円）。</p>
@@ -354,7 +369,17 @@
         </div>
       </section>
 
-      <section class="card" aria-labelledby="h-slots">
+      <section class="card" aria-labelledby="h-date">
+        <h2 id="h-date">日にちを選ぶ</h2>
+        <p class="hint">直近14日分です。各日の一番早い空き時間を表示しています。日をタップすると時間が見られます。</p>
+        <div class="dates" id="dates" role="group" aria-label="日付の選択"></div>
+        <div class="call-box" id="callNowTop" style="display:none;"></div>
+      </section>
+
+      </div>
+
+      <section class="card" id="step2" style="display:none;" aria-labelledby="h-slots">
+        <button type="button" class="back-btn" id="backBtn">← 日にち一覧に戻る</button>
         <h2 id="h-slots">空き状況</h2>
         <div class="day-head">
           <span class="date-label" id="dayLabel">―</span>
@@ -362,6 +387,7 @@
         </div>
         <div class="store-box" id="storeBox" aria-live="polite"></div>
         <p class="summary" id="summary" aria-live="polite"></p>
+        <div class="call-box" id="callNow" style="display:none;"></div>
         <div id="slotArea"></div>
         <p class="hint" style="margin-top:14px;">○ の時間は、現時点の表示で空いています。ご予約はページ下部のボタンから、もみ徳公式アプリでお願いします。</p>
       </section>
@@ -482,6 +508,7 @@
       var STORES = {
         akasaka: {
           name: "もみ徳 赤坂駅店（旧天神西店）",
+          short: "赤坂駅店",
           address: "〒810-0041 福岡市中央区大名2丁目4-38 チサンマンション天神3 507室",
           tel: "092-716-4483",
           access: "地下鉄空港線「赤坂駅」から徒歩1分／西鉄福岡（天神）駅から徒歩5分",
@@ -489,6 +516,7 @@
         },
         yakuin: {
           name: "もみ徳 薬院店",
+          short: "薬院店",
           address: "〒810-0022 福岡市中央区薬院2丁目3-5 エコール薬院 403",
           tel: "092-791-8850",
           access: "地下鉄七隈線「薬院大通」1号出口から徒歩0分／西鉄「薬院駅」から徒歩5分",
@@ -521,32 +549,108 @@
       today.setHours(0, 0, 0, 0);
       state.date = new Date(today);
 
-      /* 日付チップ（直近14日）を生成 */
-      var datesEl = document.getElementById("dates");
-      var dateBtns = [];
-      for (var i = 0; i < 14; i++) {
-        (function (offset) {
-          var d = new Date(today);
-          d.setDate(d.getDate() + offset);
-          var btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "date-btn";
-          btn.setAttribute("aria-pressed", offset === 0 ? "true" : "false");
-          var closed = HOURS[d.getDay()] === null;
-          btn.innerHTML =
-            '<span class="dow">' + (offset === 0 ? "今日・" : "") + DOW_JA[d.getDay()] + "曜</span>" +
-            '<span class="dnum">' + (d.getMonth() + 1) + "/" + d.getDate() + "</span>" +
-            (closed ? '<span class="closed-tag">お休み</span>' : '<span class="closed-tag">&nbsp;</span>');
-          btn.addEventListener("click", function () {
-            state.date = d;
-            dateBtns.forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
-            btn.setAttribute("aria-pressed", "true");
-            render();
-          });
-          datesEl.appendChild(btn);
-          dateBtns.push(btn);
-        })(i);
+      /* その日のブロック区間（予約 ± 30分） */
+      function blockedRanges(key) {
+        return BOOKINGS.filter(function (b) { return b.date === key; }).map(function (b) {
+          return { from: toMin(b.start) - INTERVAL_MIN, to: toMin(b.end) + INTERVAL_MIN };
+        });
       }
+
+      /* アプリ予約は最短で10分後から。当日分は「今から10分後」より前に始まる枠を締める */
+      var LEAD_MIN = 10;
+      function leadThreshold(d) {
+        var now = new Date();
+        if (dateKey(d) !== dateKey(now)) return -1;
+        return now.getHours() * 60 + now.getMinutes() + LEAD_MIN;
+      }
+
+      /* その日の枠一覧 */
+      function slotsFor(d) {
+        var hours = HOURS[d.getDay()];
+        if (!hours) return null;
+        var open = toMin(hours.open), close = toMin(hours.close);
+        var blocked = blockedRanges(dateKey(d));
+        var lead = leadThreshold(d);
+        var list = [];
+        for (var s = open; s + state.course <= close; s += SLOT_STEP) {
+          var e = s + state.course;
+          var hit = blocked.some(function (r) { return s < r.to && e > r.from; });
+          var past = s < lead;
+          list.push({ start: s, end: e, hit: hit, past: past, open: !hit && !past });
+        }
+        return list;
+      }
+
+      var datesEl = document.getElementById("dates");
+      var step1El = document.getElementById("step1");
+      var step2El = document.getElementById("step2");
+
+      /* 1画面目：日付リスト（その日の最短の空き時間つき） */
+      function renderDays() {
+        datesEl.innerHTML = "";
+        for (var i = 0; i < 14; i++) {
+          (function (offset) {
+            var d = new Date(today);
+            d.setDate(d.getDate() + offset);
+            var store = storeForDow(d.getDay());
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "day-row";
+            var main = '<span class="d-main">' + (offset === 0 ? "今日 " : "") +
+              (d.getMonth() + 1) + "/" + d.getDate() + "（" + DOW_JA[d.getDay()] + "）</span>";
+            if (!store) {
+              btn.disabled = true;
+              btn.innerHTML = main + '<span class="d-status off">お休み</span>';
+            } else {
+              var list = slotsFor(d);
+              var firstOpen = null;
+              list.forEach(function (sl) { if (sl.open && firstOpen === null) firstOpen = sl; });
+              if (firstOpen) {
+                btn.innerHTML = main +
+                  '<span class="d-store">' + store.short + "</span>" +
+                  '<span class="d-status ok">最短 ' + toHHMM(firstOpen.start) + "〜</span>";
+                btn.addEventListener("click", function () {
+                  state.date = d;
+                  openStep2();
+                });
+              } else {
+                btn.disabled = true;
+                btn.innerHTML = main +
+                  '<span class="d-store">' + store.short + "</span>" +
+                  '<span class="d-status off">空きなし</span>';
+              }
+            }
+            datesEl.appendChild(btn);
+          })(i);
+        }
+        renderCallNow(document.getElementById("callNowTop"), new Date(today));
+      }
+
+      /* 当日で受付時間内なら「今すぐは電話」の案内を出す */
+      function renderCallNow(el, d) {
+        var store = storeForDow(d.getDay());
+        var now = new Date();
+        var hours = HOURS[d.getDay()];
+        var show = store && hours && dateKey(d) === dateKey(now) &&
+          (now.getHours() * 60 + now.getMinutes()) < toMin(hours.close);
+        if (!show) { el.style.display = "none"; el.innerHTML = ""; return; }
+        el.style.display = "";
+        el.innerHTML =
+          "今すぐ入りたい方は、お電話が確実です（アプリ予約は10分後から）。<br />" +
+          store.short + '：<a class="tel-link" href="tel:' + store.tel.replace(/-/g, "") + '">' + store.tel + "</a>";
+      }
+
+      function openStep2() {
+        step1El.style.display = "none";
+        step2El.style.display = "";
+        renderSlots();
+        step2El.scrollIntoView({ block: "start" });
+      }
+      document.getElementById("backBtn").addEventListener("click", function () {
+        step2El.style.display = "none";
+        step1El.style.display = "";
+        step1El.scrollIntoView({ block: "start" });
+      });
 
       /* コース選択 */
       var courseBtns = Array.prototype.slice.call(document.querySelectorAll(".course-btn"));
@@ -555,20 +659,14 @@
           state.course = parseInt(btn.getAttribute("data-min"), 10);
           courseBtns.forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
           btn.setAttribute("aria-pressed", "true");
-          render();
+          renderDays();
+          if (step2El.style.display !== "none") renderSlots();
         });
       });
 
-      /* その日のブロック区間（予約 ± 30分） */
-      function blockedRanges(key) {
-        return BOOKINGS.filter(function (b) { return b.date === key; }).map(function (b) {
-          return { from: toMin(b.start) - INTERVAL_MIN, to: toMin(b.end) + INTERVAL_MIN };
-        });
-      }
-
-      function render() {
+      /* 2画面目：選んだ日の時間枠 */
+      function renderSlots() {
         var d = state.date;
-        var key = dateKey(d);
         var hours = HOURS[d.getDay()];
         var dayLabel = document.getElementById("dayLabel");
         var hoursLabel = document.getElementById("hoursLabel");
@@ -595,6 +693,7 @@
         if (!hours) {
           hoursLabel.textContent = "";
           summary.textContent = "";
+          document.getElementById("callNow").style.display = "none";
           area.innerHTML =
             '<div class="closed-box"><span class="big">この日はお休みです</span>' +
             "受付は月・水・木・日曜日です。別の日をお選びください。</div>";
@@ -602,40 +701,36 @@
         }
 
         hoursLabel.textContent = "受付 " + hours.open + "〜" + hours.close + "／" + state.course + "分コース";
-        var open = toMin(hours.open), close = toMin(hours.close);
-        var blocked = blockedRanges(key);
-
+        var list = slotsFor(d);
         var ul = document.createElement("ul");
         ul.className = "slots";
-        var openCount = 0, total = 0;
+        var openCount = 0;
 
-        for (var start = open; start + state.course <= close; start += SLOT_STEP) {
-          total++;
-          var end = start + state.course;
-          var hit = blocked.some(function (r) { return start < r.to && end > r.from; });
+        list.forEach(function (sl) {
           var li = document.createElement("li");
-          if (hit) {
-            li.className = "slot full";
-            li.innerHTML =
-              '<span class="mark" aria-hidden="true">×</span>' +
-              '<span class="time">' + toHHMM(start) + "〜" + toHHMM(end) + "</span>" +
-              '<span class="status">予約不可</span>';
-          } else {
+          if (sl.open) {
             openCount++;
             li.className = "slot open";
             li.innerHTML =
               '<span class="mark" aria-hidden="true">○</span>' +
-              '<span class="time">' + toHHMM(start) + "〜" + toHHMM(end) + "</span>" +
+              '<span class="time">' + toHHMM(sl.start) + "〜" + toHHMM(sl.end) + "</span>" +
               '<span class="status">空きあり</span>';
+          } else {
+            li.className = "slot full";
+            li.innerHTML =
+              '<span class="mark" aria-hidden="true">×</span>' +
+              '<span class="time">' + toHHMM(sl.start) + "〜" + toHHMM(sl.end) + "</span>" +
+              '<span class="status">' + (sl.past ? "受付終了" : "予約不可") + "</span>";
           }
           ul.appendChild(li);
-        }
+        });
 
         area.innerHTML = "";
         area.appendChild(ul);
         summary.textContent = openCount > 0
-          ? "空いている時間は " + openCount + " 件あります（全 " + total + " 件）"
+          ? "空いている時間は " + openCount + " 件あります（全 " + list.length + " 件）"
           : "この日は、選んだコースで入れる時間がありません。";
+        renderCallNow(document.getElementById("callNow"), d);
       }
 
       /* 受付時間表で今日の行を目立たせる */
@@ -644,7 +739,7 @@
         if (tr.getAttribute("data-dow") === todayDow) tr.classList.add("today-row");
       });
 
-      render();
+      renderDays();
     </script>
   </body>
 </html>
