@@ -438,18 +438,18 @@
 
       <div class="app-cta">
         <h2>ご予約はこちらから</h2>
-        <p>空きの確認ができたら、もみ徳公式アプリでそのまま予約できます。</p>
-        <!-- プレースホルダー：アプリの実リンクが決まり次第、href を差し替える -->
-        <a class="app-btn js-app-link" href="#" aria-label="もみ徳公式アプリで予約する（リンクは準備中）">もみ徳公式アプリで予約する</a>
-        <p class="placeholder-note">※アプリへのリンクは準備中です。決まり次第こちらに掲載します。</p>
+        <p>空きの確認ができたら、もみ徳公式アプリでそのまま予約できます。お使いの端末に合わせて開いてください。</p>
+        <p style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:14px 0 4px;">
+          <a class="app-btn" href="https://apps.apple.com/jp/app/%E3%82%82%E3%81%BF%E5%BE%B3-%E5%85%AC%E5%BC%8F-%E5%85%A8%E8%BA%AB%E3%82%82%E3%81%BF%E3%81%BB%E3%81%90%E3%81%97%E3%82%84%E8%B6%B3%E3%81%A4%E3%81%DC-%E3%83%95%E3%83%83%E3%83%88%E3%82%B1%E3%82%A2/id1532379940" target="_blank" rel="noopener">App Storeで開く（iPhone）</a>
+          <a class="app-btn" href="https://play.google.com/store/apps/details?id=com.momitoku.salon&pcampaignid=web_share" target="_blank" rel="noopener">Google Playで開く（Android）</a>
+        </p>
+        <p class="placeholder-note">※アプリは無料です。会員登録をするとアプリ会員価格でご利用いただけます。</p>
       </div>
 
       <footer>
         <p>ほぐしや木田｜もみ徳にて施術しています</p>
       </footer>
     </div>
-
-    <div class="toast" id="toast" role="status"></div>
 
     <script>
       "use strict";
@@ -636,22 +636,6 @@
         summary.textContent = openCount > 0
           ? "空いている時間は " + openCount + " 件あります（全 " + total + " 件）"
           : "この日は、選んだコースで入れる時間がありません。";
-        bindAppLinks();
-      }
-
-      /* アプリリンクはプレースホルダー：実リンク確定までは案内を表示 */
-      var toast = document.getElementById("toast");
-      var toastTimer = null;
-      function bindAppLinks() {
-        Array.prototype.forEach.call(document.querySelectorAll(".js-app-link"), function (a) {
-          a.addEventListener("click", function (ev) {
-            ev.preventDefault();
-            toast.textContent = "もみ徳公式アプリへのリンクは準備中です。アプリから日時とコースを選んでご予約ください。";
-            toast.classList.add("show");
-            if (toastTimer) clearTimeout(toastTimer);
-            toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 3600);
-          });
-        });
       }
 
       /* 受付時間表で今日の行を目立たせる */
@@ -661,7 +645,6 @@
       });
 
       render();
-      bindAppLinks();
     </script>
   </body>
 </html>
