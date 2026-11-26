@@ -409,6 +409,24 @@
         <p class="hint">指名料は、基本料金に +500円 です。料金はもみ徳公式サイトの掲載価格（2026年11月確認）で、セットコースは赤坂駅店の掲載価格です。薬院店ではセットの内容・料金が一部異なる場合があります。最終確認はアプリでお願いします。</p>
       </section>
 
+      <section class="card" aria-labelledby="h-discount">
+        <h2 id="h-discount">割引</h2>
+        <p class="menu-sub">赤坂駅店（月・水・日）</p>
+        <p style="margin:0 0 6px;">全コース対象です。</p>
+        <ul class="steps" style="list-style:none; padding-left:0;">
+          <li>前日までにご予約で <strong>100円引</strong></li>
+          <li>現金払いで <strong>100円引</strong></li>
+          <li>前回の来店から30日以内のご来店で <strong>200円引</strong></li>
+          <li>駐車券のご提示で <strong>200円引</strong></li>
+        </ul>
+        <p class="menu-sub">薬院店（木曜）</p>
+        <ul class="steps" style="list-style:none; padding-left:0;">
+          <li>60分コースはアプリ会員価格から <strong>200円引</strong></li>
+          <li>80分コースはアプリ会員価格から <strong>400円引</strong></li>
+        </ul>
+        <p class="hint">割引の併用や適用条件は、ご予約時にアプリ・店舗でご確認ください。</p>
+      </section>
+
       <section class="card" aria-labelledby="h-how">
         <h2 id="h-how">ご予約の流れ</h2>
         <ol class="steps">
@@ -466,13 +484,15 @@
           name: "もみ徳 赤坂駅店（旧天神西店）",
           address: "〒810-0041 福岡市中央区大名2丁目4-38 チサンマンション天神3 507室",
           tel: "092-716-4483",
-          access: "地下鉄空港線「赤坂駅」から徒歩1分／西鉄福岡（天神）駅から徒歩5分"
+          access: "地下鉄空港線「赤坂駅」から徒歩1分／西鉄福岡（天神）駅から徒歩5分",
+          discount: "割引（全コース対象）：前日までのご予約で100円引／現金払いで100円引／前回の来店から30日以内のご来店で200円引／駐車券のご提示で200円引"
         },
         yakuin: {
           name: "もみ徳 薬院店",
           address: "〒810-0022 福岡市中央区薬院2丁目3-5 エコール薬院 403",
           tel: "092-791-8850",
-          access: "地下鉄七隈線「薬院大通」1号出口から徒歩0分／西鉄「薬院駅」から徒歩5分"
+          access: "地下鉄七隈線「薬院大通」1号出口から徒歩0分／西鉄「薬院駅」から徒歩5分",
+          discount: "割引：アプリ会員価格から、60分コースは200円引／80分コースは400円引"
         }
       };
       function storeForDow(dow) {
@@ -565,7 +585,8 @@
             '<span class="store-name">この日は ' + store.name + '</span><br />' +
             store.address + '<br />' +
             '電話：<a href="tel:' + store.tel.replace(/-/g, "") + '">' + store.tel + '</a><br />' +
-            store.access;
+            store.access + '<br />' +
+            store.discount;
         } else {
           storeBox.style.display = "none";
           storeBox.innerHTML = "";
