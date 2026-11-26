@@ -195,28 +195,28 @@
       .store-box .store-name { font-size: 16px; font-weight: 900; color: var(--ink); }
       .store-box a { color: var(--green-deep); font-weight: 700; }
       .summary { font-size: 14px; font-weight: 700; color: var(--green-deep); margin: 2px 0 14px; }
-      .slots { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+      .slots { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 8px; }
       .slot {
-        display: flex; align-items: center; gap: 12px;
+        display: flex; align-items: center; gap: 8px;
         border: 1px solid var(--line);
         border-radius: 10px;
-        padding: 10px 12px;
-        min-height: 60px;
+        padding: 8px 10px;
+        min-height: 48px;
       }
       .slot.open { background: var(--ok-bg); }
       .slot.full { background: var(--ng-bg); color: var(--ng-ink); }
       .slot .mark {
         flex: 0 0 auto;
-        width: 34px; height: 34px;
+        width: 26px; height: 26px;
         border-radius: 50%;
         display: grid; place-items: center;
-        font-size: 19px; font-weight: 900;
+        font-size: 15px; font-weight: 900;
       }
       .slot.open .mark { background: var(--green); color: #fff; }
-      .slot.full .mark { background: transparent; border: 2px solid var(--ng-ink); color: var(--ng-ink); font-size: 16px; }
-      .slot .time { font-weight: 900; font-size: 16.5px; white-space: nowrap; }
-      .slot .status { font-size: 13px; font-weight: 700; }
-      .slot .spacer { flex: 1 1 auto; }
+      .slot.full .mark { background: transparent; border: 2px solid var(--ng-ink); color: var(--ng-ink); font-size: 13px; }
+      .slot .time { font-weight: 900; font-size: 15px; white-space: nowrap; }
+      .slot .status { font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+      .slot.full .status { color: var(--ng-ink); }
       a.app-btn {
         flex: 0 0 auto;
         display: inline-flex; align-items: center;
@@ -232,8 +232,7 @@
       }
       a.app-btn:active { background: var(--green-deep); }
       @media (max-width: 480px) {
-        .slot { flex-wrap: wrap; }
-        a.app-btn { width: 100%; justify-content: center; }
+        .app-cta a.app-btn { width: 100%; justify-content: center; }
       }
       .closed-box {
         background: var(--ng-bg);
@@ -331,7 +330,7 @@
         <div class="store-box" id="storeBox" aria-live="polite"></div>
         <p class="summary" id="summary" aria-live="polite"></p>
         <div id="slotArea"></div>
-        <p class="hint" style="margin-top:14px;">○ の時間は、現時点の表示で空いています。ご予約の確定はアプリ側で行われます。</p>
+        <p class="hint" style="margin-top:14px;">○ の時間は、現時点の表示で空いています。ご予約はページ下部のボタンから、もみ徳公式アプリでお願いします。</p>
       </section>
 
       <section class="card" aria-labelledby="h-hours">
@@ -545,9 +544,7 @@
             li.innerHTML =
               '<span class="mark" aria-hidden="true">○</span>' +
               '<span class="time">' + toHHMM(start) + "〜" + toHHMM(end) + "</span>" +
-              '<span class="status">空きあり</span>' +
-              '<span class="spacer"></span>' +
-              '<a class="app-btn js-app-link" href="#">アプリで予約する</a>';
+              '<span class="status">空きあり</span>';
           }
           ul.appendChild(li);
         }
