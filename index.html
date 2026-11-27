@@ -834,26 +834,73 @@
         if (tr.getAttribute("data-dow") === todayDow) tr.classList.add("today-row");
       });
 
-      /* 予約データを読み込んでから描画する。読み込み中は「空きあり」を出さない */
+      /* 予約データを読み込んでから描画する。読み込み中は「空きあり」を出さない。
+         正本はGoogleシート（開くたびに読みに行く）。読めない時だけ予備の bookings.json を使う */
       datesEl.innerHTML = '<p class="loading">予約状況を読み込んでいます…</p>';
       heroEl.classList.add("static");
       heroEl.innerHTML = '<span class="th-main" style="display:block;">予約状況を読み込んでいます…</span>';
-      fetch("bookings.json?t=" + Date.now(), { cache: "no-store" })
-        .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
-        .then(function (data) {
-          BOOKINGS = (data && data.bookings) || [];
-          BOOKINGS_UPDATED = (data && data.updated) || "";
-          var ua = document.getElementById("updatedAt");
-          if (ua && BOOKINGS_UPDATED) {
-            var p = BOOKINGS_UPDATED.split("-");
-            ua.textContent = "データ最終更新：" + p[0] + "年" + Number(p[1]) + "月" + Number(p[2]) + "日";
-          }
-          renderDays();
-        })
-        .catch(function () {
-          datesEl.innerHTML = '<div class="closed-box"><span class="big">予約状況を読み込めませんでした</span>お手数ですが、ページを再読み込みするか、お電話でご確認ください。</div>';
-          heroEl.innerHTML = '<span class="th-main" style="display:block;">予約状況を読み込めませんでした</span><span class="th-sub" style="display:block;">再読み込みしてお試しください</span>';
-        });
+
+      var SHEET_BASE = "https://docs.google.com/spreadsheets/d/1iVvwc7X2W_icVZ9TyV6qU572aLGuF1Wdp526eGysE3A/gviz/tq";
+      var rendered = false;
+
+      function setUpdatedLabel(iso) {
+        var ua = document.getElementById("updatedAt");
+        if (ua && iso) {
+          var p = String(iso).split("-");
+          if (p.length === 3) ua.textContent = "データ最終更新：" + p[0] + "年" + Number(p[1]) + "月" + Number(p[2]) + "日";
+        }
+      }
+      function renderWith(list, updatedIso) {
+        if (rendered) return;
+        rendered = true;
+        BOOKINGS = list || [];
+        if (updatedIso) setUpdatedLabel(updatedIso);
+        renderDays();
+      }
+      function showLoadError() {
+        if (rendered) return;
+        rendered = true;
+        datesEl.innerHTML = '<div class="closed-box"><span class="big">予約状況を読み込めませんでした</span>お手数ですが、ページを再読み込みするか、お電話でご確認ください。</div>';
+        heroEl.innerHTML = '<span class="th-main" style="display:block;">予約状況を読み込めませんでした</span><span class="th-sub" style="display:block;">再読み込みしてお試しください</span>';
+      }
+      function loadFromJsonFallback() {
+        fetch("bookings.json?t=" + Date.now(), { cache: "no-store" })
+          .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+          .then(function (data) { renderWith((data && data.bookings) || [], data && data.updated); })
+          .catch(showLoadError);
+      }
+      function cellVal(cell) { return cell && cell.v != null ? String(cell.v) : ""; }
+
+      window.ybBookings = function (resp) {
+        try {
+          var rows = (resp && resp.table && resp.table.rows) || [];
+          var list = [];
+          rows.forEach(function (r) {
+            var d = cellVal(r.c[0]), s = cellVal(r.c[1]), e = cellVal(r.c[2]);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(d) && /^\d{2}:\d{2}$/.test(s) && /^\d{2}:\d{2}$/.test(e)) {
+              list.push({ date: d, start: s, end: e });
+            }
+          });
+          renderWith(list, null);
+          var ms = document.createElement("script");
+          ms.src = SHEET_BASE + "?tqx=out:json;responseHandler:ybMeta&headers=0&sheet=meta";
+          document.head.appendChild(ms);
+        } catch (err) { loadFromJsonFallback(); }
+      };
+      window.ybMeta = function (resp) {
+        try {
+          var rows = (resp && resp.table && resp.table.rows) || [];
+          rows.forEach(function (r) {
+            if (cellVal(r.c[0]) === "updated") setUpdatedLabel(cellVal(r.c[1]));
+          });
+        } catch (err) { /* ラベルだけなので失敗しても無視 */ }
+      };
+
+      var bs = document.createElement("script");
+      bs.src = SHEET_BASE + "?tqx=out:json;responseHandler:ybBookings&headers=1";
+      bs.onerror = loadFromJsonFallback;
+      document.head.appendChild(bs);
+      setTimeout(function () { if (!rendered) loadFromJsonFallback(); }, 10000);
     </script>
   </body>
 </html>
